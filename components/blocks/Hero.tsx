@@ -11,7 +11,7 @@ export function Hero({ block, ctx }: { block: HeroBlock; ctx: BlockContext }) {
         <div className={`grid items-center gap-8 ${block.image ? "md:grid-cols-2" : ""}`}>
           <div>
             <h1 className="text-display font-bold text-white">{block.heading}</h1>
-            {block.text ? <p className="mt-4 max-w-2xl text-hero text-white/90">{block.text}</p> : null}
+            {block.text ? <p className="mt-4 max-w-2xl landing-lead text-white/90">{block.text}</p> : null}
             <ButtonRow buttons={block.buttons} lang={ctx.lang} trialUrl={ctx.trialUrl} demoApp={ctx.demoApp ?? true} onBrand />
           </div>
           {block.image ? <CmsImage image={block.image} priority className="h-auto w-full rounded-tile border border-white/20 bg-surface object-cover" /> : null}

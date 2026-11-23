@@ -13,7 +13,7 @@ export function NotFoundView({ lang }: { lang: Lang }) {
           <LogoMark size={26} />
         </span>
         <h1 className="text-page-title font-bold text-fg-strong">{s.title}</h1>
-        <p className="mt-3 text-hero text-fg-secondary">{s.text}</p>
+        <p className="mt-3 landing-lead text-fg-secondary">{s.text}</p>
         <div className="mt-6">
           <SiteLink href={pagePath("home", lang)} className="dt-btn dt-btn-primary dt-btn-lg">{s.home}</SiteLink>
         </div>

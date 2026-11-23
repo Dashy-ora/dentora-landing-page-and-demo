@@ -12,7 +12,7 @@ export function ImageText({ block }: { block: ImageTextBlock }) {
         </div>
         <div className={imageFirst ? "md:order-2" : "md:order-1"}>
           {block.heading ? <h2 className="mb-4 text-page-title font-bold text-fg-strong">{block.heading}</h2> : null}
-          <p className="whitespace-pre-line text-hero text-fg-secondary">{block.text}</p>
+          <p className="whitespace-pre-line landing-lead text-fg-secondary">{block.text}</p>
         </div>
       </div>
     </Section>

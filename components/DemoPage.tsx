@@ -31,7 +31,7 @@ export function DemoIntro({ demo, lang, fallbackTrial, appAvailable = true }: { 
         <div className="dt-hero mx-auto max-w-3xl text-center !p-8 md:!p-12">
           <LogoMark className="dt-watermark" size={260} />
           <h1 className="text-display font-bold text-white">{s.unavailableTitle}</h1>
-          <p className="mx-auto mt-4 max-w-xl text-hero text-white/90">{s.unavailableText}</p>
+          <p className="mx-auto mt-4 max-w-xl landing-lead text-white/90">{s.unavailableText}</p>
           <div className="mt-6 flex justify-center">
             <SiteLink href={trial.href} external={trial.external} className="dt-btn dt-btn-lg dt-btn-tonal">{trial.label}</SiteLink>
           </div>
@@ -51,7 +51,7 @@ export function DemoIntro({ demo, lang, fallbackTrial, appAvailable = true }: { 
           <span className="dt-pill dt-pill-info">{s.sampleNote}</span>
         </div>
         <h1 className="mt-4 text-display font-bold text-white">{clinicName}</h1>
-        <p className="mt-4 text-hero text-white/90">{demo.welcome[lang]}</p>
+        <p className="mt-4 landing-lead text-white/90">{demo.welcome[lang]}</p>
         <p className="mt-2 text-white/80">{s.intro}</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <SiteLink href={DEMO_APP_PATH} className="dt-btn dt-btn-lg dt-btn-tonal">{s.open}</SiteLink>
