@@ -6,7 +6,7 @@ import { isUnknownPage, NOT_FOUND_PATH, pageRequest, type PageList } from "@/lib
 // The published-page list comes from /api/site-slugs (tagged cache), because a proxy cannot cache by tag itself.
 async function loadList(request: NextRequest, lang: string): Promise<PageList> {
   try {
-    const response = await fetch(new URL(`/api/site-slugs/${lang}`, request.nextUrl.origin), { cache: "no-store", signal: AbortSignal.timeout(3000) });
+    const response = await fetch(new URL(`/api/site-slugs/${lang}`, request.nextUrl.origin), { cache: "no-store", signal: AbortSignal.timeout(6000) });
     if (response.status !== 200) return null;
     const body = (await response.json()) as { slugs?: unknown };
     return Array.isArray(body.slugs) ? { slugs: body.slugs.filter((s): s is string => typeof s === "string") } : null;

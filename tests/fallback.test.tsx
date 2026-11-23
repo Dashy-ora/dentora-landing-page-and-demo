@@ -1,13 +1,11 @@
 import assert from "node:assert/strict";
 import test, { beforeEach } from "node:test";
-import { renderToStaticMarkup } from "react-dom/server";
-import { BackSoon } from "@/components/BackSoon";
 import { fetchPublic, publicReadHeaders } from "@/lib/api";
 import { resetLastGood, withFallback } from "@/lib/fallback";
 
 beforeEach(() => resetLastGood());
 
-test("backend down and no copy at all: unavailable (the page shows Back soon)", async () => {
+test("backend down and no copy at all: unavailable (lib/data then serves the built-in defaults)", async () => {
   const r = await withFallback("k", async () => { throw new Error("down"); });
   assert.equal(r.status, "unavailable");
 });
@@ -34,14 +32,6 @@ test("404 (unpublished or switched off) is missing and drops the copy, so an unp
 test("copies are per key", async () => {
   await withFallback("a", async () => 1);
   assert.equal((await withFallback("b", async () => { throw new Error("down"); })).status, "unavailable");
-});
-
-test("Back soon page is plain: a heading, no links, Arabic and English", () => {
-  const ar = renderToStaticMarkup(<BackSoon lang="ar" />);
-  const en = renderToStaticMarkup(<BackSoon lang="en" />);
-  assert.match(ar, /سنعود قريبًا/);
-  assert.match(en, /We will be back soon/);
-  assert.doesNotMatch(ar + en, /<a /);
 });
 
 const env = { DENTORA_API_URL: "http://backend.test" };

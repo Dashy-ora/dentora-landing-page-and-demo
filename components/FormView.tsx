@@ -5,7 +5,22 @@ import { runSubmit, type FieldErrors, type FieldValues } from "@/lib/forms";
 import { t } from "@/lib/i18n";
 import type { FormDefinition, FormField, Lang } from "@/lib/types";
 
-type Status = "idle" | "sending" | "success" | "rate_limited" | "error";
+type Status = "idle" | "sending" | "success" | "rate_limited" | "unreachable" | "error";
+export type FormContact = { phone: string | null; email: string | null };
+
+/** "We couldn't send this right now. Call us on ... or email ...": the contact details are real links, shown left-to-right in both languages. */
+export function UnreachableMessage({ lang, contact }: { lang: Lang; contact: FormContact }) {
+  const s = t(lang).form;
+  const template = contact.phone && contact.email ? s.unreachableBoth : contact.phone ? s.unreachablePhone : contact.email ? s.unreachableEmail : s.unreachablePlain;
+  return (
+    <>
+      {template.split(/(\{phone\}|\{email\})/).map((part, index) =>
+        part === "{phone}" ? <a key={index} dir="ltr" className="font-semibold underline" href={`tel:${contact.phone?.replace(/\s+/g, "")}`}>{contact.phone}</a>
+        : part === "{email}" ? <a key={index} dir="ltr" className="font-semibold underline" href={`mailto:${contact.email}`}>{contact.email}</a>
+        : part)}
+    </>
+  );
+}
 
 function inputProps(field: FormField) {
   switch (field.type) {
@@ -17,7 +32,7 @@ function inputProps(field: FormField) {
 }
 
 /** Renders a published form definition. Client rules mirror the server; the typed values survive every error. */
-export function FormView({ definition, lang, id }: { definition: FormDefinition; lang: Lang; id?: string }) {
+export function FormView({ definition, lang, id, contact = { phone: null, email: null } }: { definition: FormDefinition; lang: Lang; id?: string; contact?: FormContact }) {
   const s = t(lang).form;
   const [values, setValues] = useState<FieldValues>({});
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -59,6 +74,7 @@ export function FormView({ definition, lang, id }: { definition: FormDefinition;
 
       {hasFieldErrors ? <div className="dt-alert dt-alert-error" role="alert">{s.summary}</div> : null}
       {status === "rate_limited" ? <div className="dt-alert dt-alert-warning" role="alert" data-form-state="rate_limited">{s.rateLimited}</div> : null}
+      {status === "unreachable" ? <div className="dt-alert dt-alert-warning" role="alert" data-form-state="unreachable"><p><UnreachableMessage lang={lang} contact={contact} /></p></div> : null}
       {status === "error" ? <div className="dt-alert dt-alert-error" role="alert" data-form-state="error">{s.error}</div> : null}
 
       {definition.fields.map((field) => {

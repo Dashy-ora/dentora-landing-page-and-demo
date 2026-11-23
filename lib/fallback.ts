@@ -1,7 +1,7 @@
 /**
  * Last-good-copy fallback (spec §7 "Backend failure"): when the backend fails, serve the last copy this server saw.
  * A 404 (unpublished or switched off) clears the copy, so an unpublish is never masked by stale content.
- * With no copy at all the caller shows the plain "Back soon" page.
+ * With no copy at all `lib/data.ts` serves the built-in defaults (content/defaults).
  */
 export type Loaded<T> =
   | { status: "ok"; data: T; stale: boolean }

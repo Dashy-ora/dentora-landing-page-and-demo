@@ -29,6 +29,7 @@ export function trialUrl(env: Record<string, string | undefined> = process.env):
 /** Image URLs from the backend: absolute as-is, root-relative against the backend origin. */
 export function mediaUrl(url: string, env: Record<string, string | undefined> = process.env): string {
   if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("/defaults/")) return url; // built-in default images live in public/, never on the backend
   if (url.startsWith("/")) {
     const origin = apiOrigin(env);
     return origin ? `${origin}${url}` : url;

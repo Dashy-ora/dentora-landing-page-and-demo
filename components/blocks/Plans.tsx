@@ -28,7 +28,7 @@ export function Plans({ block, ctx }: { block: PlansBlock; ctx: BlockContext }) 
   const trial = resolveAction("start_trial", ctx.lang, ctx.trialUrl);
   return (
     <Section heading={block.heading}>
-      <ul className="grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3" data-block="plans">
+      <ul className={`grid items-stretch gap-5 md:grid-cols-2 ${pricing.plans.length >= 4 ? "xl:grid-cols-4" : "lg:grid-cols-3"}`} data-block="plans">
         {pricing.plans.map((plan) => {
           const offers = live.filter((offer) => plan.offer_ids.includes(offer.id));
           const unit = interval(plan, ctx.lang);
@@ -42,6 +42,8 @@ export function Plans({ block, ctx }: { block: PlansBlock; ctx: BlockContext }) 
               <p className="flex flex-wrap items-baseline gap-2">
                 {plan.price_minor === null ? (
                   <span className="text-title font-semibold text-fg">{s.priceOnRequest}</span>
+                ) : plan.price_minor === 0 ? (
+                  <span className="text-display font-bold text-fg-strong" data-price>{s.free}</span>
                 ) : (
                   <>
                     <span className="text-display font-bold text-fg-strong tabular-nums" data-price>{formatMoney(plan.price_minor, plan.currency, ctx.lang)}</span>

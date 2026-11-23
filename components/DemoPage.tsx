@@ -1,5 +1,4 @@
 import { connection } from "next/server";
-import { BackSoon } from "./BackSoon";
 import { Blocks, needsOffers, needsPricing, type BlockContext } from "./blocks";
 import { FormSection } from "./FormSection";
 import { LogoMark } from "./Logo";
@@ -7,6 +6,7 @@ import { SiteChrome } from "./SiteChrome";
 import { CmsImage, SiteLink } from "./ui";
 import { requestNow } from "@/lib/clock";
 import { mediaUrl, trialUrl } from "@/lib/config";
+import { demoBuildAvailable } from "@/lib/demo-build";
 import { getDemo, getOffers, getPage, getPricing } from "@/lib/data";
 import { t } from "@/lib/i18n";
 import { DEMO_APP_PATH } from "@/lib/paths";
@@ -20,11 +20,12 @@ export function trialTarget(demo: Demo | null, lang: Lang, fallback: string): { 
   return { href: url, label: demo?.trial.label[lang] ?? t(lang).demo.trial, external: /^https?:\/\//i.test(url) };
 }
 
-export function DemoIntro({ demo, lang, fallbackTrial }: { demo: Demo | null; lang: Lang; fallbackTrial: string }) {
+/** `appAvailable` is false when the portal demo build is not synced in: the page then shows the trial call to action. */
+export function DemoIntro({ demo, lang, fallbackTrial, appAvailable = true }: { demo: Demo | null; lang: Lang; fallbackTrial: string; appAvailable?: boolean }) {
   const s = t(lang).demo;
-  const enabled = demo?.enabled === true;
+  const enabled = demo?.enabled === true && appAvailable;
   const trial = trialTarget(demo, lang, fallbackTrial);
-  if (!enabled) {
+  if (!enabled || !demo) {
     return (
       <section className="px-4 py-12 md:px-6" data-demo-state="trial">
         <div className="dt-hero mx-auto max-w-3xl text-center !p-8 md:!p-12">
@@ -66,27 +67,22 @@ export async function DemoPage({ lang }: { lang: Lang }) {
   await connection();
   const [demo, page] = await Promise.all([getDemo(), getPage(lang, "demo")]);
   const settings = demo.status === "ok" ? demo.data : null;
-  if (!settings && page.status !== "ok" && demo.status === "unavailable") {
-    return (
-      <SiteChrome lang={lang} slug="demo">
-        <BackSoon lang={lang} />
-      </SiteChrome>
-    );
-  }
+  const appAvailable = demoBuildAvailable();
   const blocks = page.status === "ok" ? page.data.blocks : [];
   const [pricing, offers] = await Promise.all([needsPricing(blocks) ? getPricing(lang) : null, needsOffers(blocks) ? getOffers(lang) : null]);
   const ctx: BlockContext = {
     lang,
     trialUrl: trialUrl(),
     now: requestNow(),
+    demoApp: appAvailable,
     pricing: pricing?.status === "ok" ? pricing.data : null,
     offers: offers?.status === "ok" ? offers.data.offers : null,
   };
-  const enabled = settings?.enabled === true;
+  const enabled = settings?.enabled === true && appAvailable;
   return (
     <SiteChrome lang={lang} slug="demo">
       <main id="content" className="flex-1">
-        <DemoIntro demo={settings} lang={lang} fallbackTrial={trialUrl()} />
+        <DemoIntro demo={settings} lang={lang} fallbackTrial={trialUrl()} appAvailable={appAvailable} />
         <Blocks blocks={blocks} ctx={ctx} />
         {!enabled ? (
           <section className="pb-12">

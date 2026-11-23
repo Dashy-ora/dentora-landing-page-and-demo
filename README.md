@@ -26,10 +26,11 @@ Other scripts:
 | `npm test` | unit tests (`node:test` through `tsx`): blocks, RTL, offer window, forms, fallback, signature, kit drift |
 | `npm run lint` | ESLint |
 | `npm run build` / `npm start` | production build and server |
-| `npm run check` | tests, lint and build |
+| `npm run test:routes` | after a build: starts the server with no backend (unset, 503, 404, bad body, refused) and checks every route, the 404s, forms and revalidate |
+| `npm run check` | tests, lint, build and the route check |
 | `npm run sync:demo` | copy the portal demo build into `public/demo/app` |
 
-With nothing published in the backend (or no backend), every page shows the plain "Back soon" page. Publish the four website areas from the dashboard once (landing, demo, offers, forms) and the site fills in.
+The site works with no backend at all: see "Running with no backend" below. With a backend, publish the four website areas from the dashboard once (landing, demo, offers, forms) and the live content replaces the built-in defaults.
 
 ## Configuration
 
@@ -49,7 +50,7 @@ All in `.env.local` (never committed; `.env.example` is the template).
 | Route | What |
 |---|---|
 | `/[[...slug]]`, `/en/[[...slug]]` | Any published CMS page by slug (`home`, `pricing`, `features`, `features/<group>`, `contact`, `about`, `terms`, `privacy` and custom pages, one nesting level). |
-| `/demo`, `/en/demo` | Demo intro from the published demo settings with an "Open the demo" button; a trial call to action (and the trial-interest form) when the demo is switched off or unpublished. |
+| `/demo`, `/en/demo` | Demo intro from the published demo settings with an "Open the demo" button; a trial call to action (and the trial-interest form) when the demo is switched off, or when the demo build is not synced in. |
 | `/demo/app/*` | The static clinic-portal demo build. Deep links fall back to `index.html`. |
 | `/api/forms/{form}` | Same-origin proxy to `POST /public/site/forms/{form}`. |
 | `/api/revalidate` | Signed refresh call from the backend (HMAC-SHA256). |
@@ -59,7 +60,7 @@ Block types render one component each (`components/blocks`). Button actions map 
 
 ## How data is cached
 
-Server components read the public endpoints through cached functions (`lib/data.ts`): `use cache` with `cacheTag(<area>)` and a short `cacheLife` (revalidate 60 seconds) as a safety net, which also keeps live catalog prices fresh. A signed `POST /api/revalidate` from the backend revalidates the area's tag at once. Offers are filtered again by `starts_at`/`ends_at` at request time, so an offer ends on time even from a cached copy. If the backend fails, the last good copy this server saw is served (`lib/fallback.ts`); a 404 (unpublished or switched off) clears the copy; with no copy at all the page shows "Back soon". The in-memory copy is per server process: on several instances each has its own.
+Server components read the public endpoints through cached functions (`lib/data.ts`): `use cache` with `cacheTag(<area>)` and a short `cacheLife` (revalidate 60 seconds) as a safety net, which also keeps live catalog prices fresh. A signed `POST /api/revalidate` from the backend revalidates the area's tag at once. Offers are filtered again by `starts_at`/`ends_at` at request time, so an offer ends on time even from a cached copy. Every read falls back in this order: the live API, then the last good copy this server saw (`lib/fallback.ts`), then the built-in defaults. A 404 clears the copy (so an unpublish is never masked by stale content) and the defaults answer instead. The in-memory copy is per server process: on several instances each has its own.
 
 ## The demo
 
@@ -73,7 +74,7 @@ npm run sync:demo              # PORTAL_DEMO_DIST overrides the source folder
 npm run build
 ```
 
-`sync:demo` refuses a folder that is not a demo build. Without it `/demo` still works but "Open the demo" leads nowhere.
+`sync:demo` refuses a folder that is not a demo build. `next build` works without `public/demo/app`: `/demo` then shows the trial call to action and the trial-interest form, and "Open the demo" buttons in pages are left out, so no link leads nowhere (`lib/demo-build.ts` checks for `public/demo/app/index.html` on each request). `/demo/app` itself needs no backend: it uses its build-time defaults when `GET /public/site/demo` fails.
 
 ## Production
 
@@ -84,7 +85,19 @@ npm run build
 - **TLS and hosting.** Serve the site over HTTPS behind your proxy/CDN. Set `SITE_URL` to the public https origin. The demo build must be synced before the build, as above.
 - **Images.** Backend media URLs are used as returned (absolute, or root-relative to the backend origin). Production image storage is a go-live item on the backend side.
 
+## Running with no backend
+
+Leave `DENTORA_API_URL` unset (or let the API be down, slow, return 404/503, or send an unusable body) and the whole site still works from built-in defaults in `content/defaults/`. They use the public API's own types and follow the backend's local seed drafts (W61 `LocalWebsiteDataset`), so the site looks like the dashboard's starting point:
+
+- every fixed page in Arabic and English with its blocks: `home`, `pricing`, `features`, `features/<group>` (patient-care, front-desk, finance, growth, operations, reports), `contact`, `demo`, `about`, `terms`, `privacy` (terms and privacy are placeholder text, as in the seed);
+- navigation, footer, fictional contact details (hello@dentora.example, +20 100 000 0900) and the social link;
+- pricing: Trial, Basic, Standard (highlighted) and Full with the seed's EGP prices, setup fees, modules and limits;
+- one offer ("Launch offer", code LAUNCH20) whose dates are computed from the request time, so it is always live;
+- the forms `demo_request`, `contact`, `trial_interest`; demo settings (enabled, all modules, "Nile Smile Demo", welcome text, trial button);
+- images are local illustrations in `public/defaults/`, never links to the backend.
+
+Rules: an unpublished area also shows the defaults (there is no "Back soon" page any more). An unknown slug still answers 404. The sitemap and the 404 proxy use the same fallback. Each time defaults are served, the server logs a throttled warning (`[dentora-landing] Serving built-in default content for ...`); visitors see nothing different. A form submitted while the backend is unset or unreachable does not pretend to succeed: it says "We couldn't send this right now. Call us on ... or email ..." with the contact details, keeps what was typed and stores nothing. `/api/revalidate` is unchanged (503 without a secret). `npm run test:routes` exercises all of this against a build.
+
 ## Known limits
 
-- An unknown URL renders the 404 page with `noindex`, but the HTTP status is 200 because the page streams (Cache Components). A true 404 status would need a `proxy.ts` slug check; not done.
 - The sitemap and `robots.txt` are generated on request from the published page list.

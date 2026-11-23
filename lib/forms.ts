@@ -69,12 +69,15 @@ export type SubmitOutcome =
   | { kind: "success" }
   | { kind: "invalid"; fields: FieldErrors }
   | { kind: "rate_limited" }
+  /** The backend is unset, unreachable or has the form switched off: nothing was sent, the visitor is shown how to reach us instead. */
+  | { kind: "unreachable" }
   | { kind: "error" };
 
 /** Maps the proxy's response to what the visitor sees. The visitor's input is never cleared by anything but `success`. */
 export async function interpretResponse(response: Response): Promise<SubmitOutcome> {
   if (response.status === 202) return { kind: "success" };
   if (response.status === 429) return { kind: "rate_limited" };
+  if (response.status === 503 || response.status === 404) return { kind: "unreachable" };
   if (response.status === 422) {
     try {
       const body = (await response.json()) as { fields?: Record<string, unknown> };
@@ -89,7 +92,7 @@ export async function interpretResponse(response: Response): Promise<SubmitOutco
 }
 
 export type SubmitState = {
-  status: "idle" | "success" | "rate_limited" | "error";
+  status: "idle" | "success" | "rate_limited" | "unreachable" | "error";
   errors: FieldErrors;
   /** What stays in the inputs. Only a successful send clears them. */
   values: FieldValues;
@@ -124,6 +127,7 @@ export async function runSubmit(input: {
     case "success": return { status: "success", errors: {}, values: {} };
     case "invalid": return { status: "idle", errors: outcome.fields, values };
     case "rate_limited": return { status: "rate_limited", errors: {}, values };
+    case "unreachable": return { status: "unreachable", errors: {}, values };
     default: return { status: "error", errors: {}, values };
   }
 }

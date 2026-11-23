@@ -30,8 +30,8 @@ export function SiteLink({ href, external, className, children, ...rest }: { hre
 
 export type ButtonVariant = "primary" | "tonal" | "outline";
 
-export function ButtonLink({ button, lang, trialUrl, variant = "primary" }: { button: Button; lang: Lang; trialUrl: string; variant?: ButtonVariant }) {
-  const target = resolveAction(button.action, lang, trialUrl);
+export function ButtonLink({ button, lang, trialUrl, variant = "primary", demoApp = true }: { button: Button; lang: Lang; trialUrl: string; variant?: ButtonVariant; demoApp?: boolean }) {
+  const target = resolveAction(button.action, lang, trialUrl, demoApp);
   if (!target) return null;
   return (
     <SiteLink href={target.href} external={target.external} className={`dt-btn dt-btn-lg dt-btn-${variant}`}>
@@ -40,12 +40,14 @@ export function ButtonLink({ button, lang, trialUrl, variant = "primary" }: { bu
   );
 }
 
-export function ButtonRow({ buttons, lang, trialUrl, onBrand = false }: { buttons: Button[]; lang: Lang; trialUrl: string; onBrand?: boolean }) {
+export function ButtonRow({ buttons, lang, trialUrl, onBrand = false, demoApp = true }: { buttons: Button[]; lang: Lang; trialUrl: string; onBrand?: boolean; demoApp?: boolean }) {
+  // Buttons that resolve to nothing (a demo link without a demo build) are dropped before the first/primary one is picked.
+  buttons = buttons.filter((button) => resolveAction(button.action, lang, trialUrl, demoApp) !== null);
   if (buttons.length === 0) return null;
   return (
     <div className="mt-6 flex flex-wrap gap-3">
       {buttons.map((button, index) => (
-        <ButtonLink key={`${button.action}-${index}`} button={button} lang={lang} trialUrl={trialUrl} variant={index === 0 ? (onBrand ? "tonal" : "primary") : "outline"} />
+        <ButtonLink key={`${button.action}-${index}`} button={button} lang={lang} trialUrl={trialUrl} demoApp={demoApp} variant={index === 0 ? (onBrand ? "tonal" : "primary") : "outline"} />
       ))}
     </div>
   );

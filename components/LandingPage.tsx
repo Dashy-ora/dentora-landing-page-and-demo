@@ -1,30 +1,23 @@
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
-import { BackSoon } from "./BackSoon";
 import { Blocks, needsOffers, needsPricing, type BlockContext } from "./blocks";
 import { FormSection } from "./FormSection";
 import { SiteChrome } from "./SiteChrome";
 import { requestNow } from "@/lib/clock";
 import { trialUrl } from "@/lib/config";
-import { getNavigation, getOffers, getPage, getPricing } from "@/lib/data";
+import { demoBuildAvailable } from "@/lib/demo-build";
+import { getOffers, getPage, getPricing } from "@/lib/data";
 import { slugFromSegments } from "@/lib/paths";
 import type { Lang } from "@/lib/types";
 
-/** One CMS page by URL segments. 404 only when the site is published but this page is not; "Back soon" when nothing can be shown. */
+/** One page by URL segments: the published CMS page, or the built-in default page. 404 for a slug that is neither. */
 export async function LandingPage({ lang, params }: { lang: Lang; params: Promise<{ slug?: string[] }> }) {
   const { slug: segments } = await params;
   const slug = slugFromSegments(segments);
   if (slug === null) notFound();
   await connection();
-  const [page, navigation] = await Promise.all([getPage(lang, slug), getNavigation(lang)]);
-  if (page.status === "missing" && navigation.status === "ok") notFound();
-  if (page.status !== "ok") {
-    return (
-      <SiteChrome lang={lang} slug={slug}>
-        <BackSoon lang={lang} />
-      </SiteChrome>
-    );
-  }
+  const page = await getPage(lang, slug);
+  if (page.status !== "ok") notFound();
   const data = page.data;
   const [pricing, offers] = await Promise.all([
     needsPricing(data.blocks) ? getPricing(lang) : null,
@@ -34,6 +27,7 @@ export async function LandingPage({ lang, params }: { lang: Lang; params: Promis
     lang,
     trialUrl: trialUrl(),
     now: requestNow(),
+    demoApp: demoBuildAvailable(),
     pricing: pricing?.status === "ok" ? pricing.data : null,
     offers: offers?.status === "ok" ? offers.data.offers : null,
   };

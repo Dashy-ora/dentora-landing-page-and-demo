@@ -29,7 +29,7 @@ export async function fetchPublic(path: string, options: Options = {}): Promise<
       method: "GET",
       headers: publicReadHeaders(),
       cache: "no-store",
-      signal: AbortSignal.timeout(options.timeoutMs ?? 8000),
+      signal: AbortSignal.timeout(options.timeoutMs ?? 4000),
     });
     if (response.status === 404) return { kind: "missing" };
     if (response.status !== 200) return { kind: "unavailable" };

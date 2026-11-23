@@ -9,8 +9,7 @@ import { getNavigation, getOffers } from "@/lib/data";
 import type { Lang } from "@/lib/types";
 
 /**
- * Header, top banner and footer around a page. Menus come from the cached navigation read; with no navigation (nothing
- * published, or the backend down with no copy) only a plain header is shown, and the page decides what to say.
+ * Header, top banner and footer around a page. Menus come from the navigation read (live, last good copy or the built-in defaults).
  */
 export async function SiteChrome({ lang, slug, children }: { lang: Lang; slug: string; children: ReactNode }) {
   await connection();

@@ -62,7 +62,7 @@ test("429 says to try again in a few minutes and keeps the input", async () => {
 });
 
 test("server and network failures keep the input", async () => {
-  for (const fetchImpl of [respond(503, { error: "unavailable" }), respond(500), (async () => { throw new Error("offline"); }) as unknown as typeof fetch]) {
+  for (const fetchImpl of [respond(500), (async () => { throw new Error("offline"); }) as unknown as typeof fetch]) {
     const result = await runSubmit({ definition: form, values: good, lang: "en", honeypot: "", fetchImpl });
     assert.equal(result.status, "error");
     assert.deepEqual(result.values, good);
@@ -89,7 +89,9 @@ test("response interpretation", async () => {
   assert.deepEqual(await interpretResponse(new Response(null, { status: 202 })), { kind: "success" });
   assert.deepEqual(await interpretResponse(new Response(null, { status: 429 })), { kind: "rate_limited" });
   assert.deepEqual(await interpretResponse(new Response("not json", { status: 422 })), { kind: "invalid", fields: {} });
-  assert.deepEqual(await interpretResponse(new Response(null, { status: 404 })), { kind: "error" });
+  assert.deepEqual(await interpretResponse(new Response(null, { status: 404 })), { kind: "unreachable" });
+  assert.deepEqual(await interpretResponse(new Response(null, { status: 503 })), { kind: "unreachable" });
+  assert.deepEqual(await interpretResponse(new Response(null, { status: 500 })), { kind: "error" });
 });
 
 test("messages are plain and bilingual, with the contract wording for 429", async () => {

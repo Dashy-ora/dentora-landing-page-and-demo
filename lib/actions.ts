@@ -8,13 +8,14 @@ export type ResolvedAction = { href: string; external: boolean };
  * open_demo -> /demo/app, contact -> the contact page, page:<slug> -> /<slug> (/en/<slug>), url:<https> -> that URL.
  * Anything else resolves to null and the button is not rendered.
  */
-export function resolveAction(action: string, lang: Lang, trialUrl: string): ResolvedAction | null {
+export function resolveAction(action: string, lang: Lang, trialUrl: string, demoApp = true): ResolvedAction | null {
   switch (action) {
     case "start_trial":
       return { href: trialUrl, external: /^https?:\/\//i.test(trialUrl) };
     case "book_demo":
       return { href: `${pagePath("contact", lang)}#demo-request`, external: false };
     case "open_demo":
+      if (!demoApp) return null;
       return { href: DEMO_APP_PATH, external: false };
     case "contact":
       return { href: pagePath("contact", lang), external: false };
