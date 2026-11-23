@@ -84,6 +84,10 @@ async function scenario(name, apiUrl, port) {
     check(form.status === 503 || form.status === 404, `form post -> ${form.status}, expected 503 or 404`);
     check((await fetch(`${base}/api/revalidate`, { method: "POST", body: "{}" })).status === 503, "revalidate without a secret is not 503");
     if (demoBuild) check((await fetch(`${base}/demo/app`)).status === 200, "/demo/app is not 200");
+    const demoSettings = await fetch(`${base}/api/v1/public/site/demo`);
+    const demoBody = demoSettings.status === 200 ? await demoSettings.json() : null;
+    check(demoSettings.status === 200 && demoBody?.data?.enabled === true && Array.isArray(demoBody?.data?.modules), `demo settings -> ${demoSettings.status}, expected 200 with the default settings`);
+    check(demoBody?.data?.trial?.url === "/contact#trial-interest", `demo trial url -> ${demoBody?.data?.trial?.url}, expected the trial request form`);
     check(/built-in default content/.test(log), "no server-side warning was logged for the defaults");
   } finally {
     child.kill("SIGTERM");
