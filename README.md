@@ -40,7 +40,7 @@ All in `.env.local` (never committed; `.env.example` is the template).
 |---|---|
 | `DENTORA_API_URL` | Backend origin, for example `http://127.0.0.1:8000`. `/api/v1` is added for you. |
 | `LANDING_REVALIDATE_SECRET` | Shared secret for the signed refresh call; at least 16 characters, identical to the backend's `LANDING_REVALIDATE_SECRET`. |
-| `PORTAL_TRIAL_URL` | Target of every "Start a trial" button. |
+| `PORTAL_TRIAL_URL` | Optional. Target of every "Start a free trial" button. Empty means the trial request form on the Contact page (`/contact#trial-interest`, `/en/...` in English). Set it only to a real self-service sign-up page: the clinic portal has no sign-up. |
 | `SITE_URL` | This site's public origin: canonical URLs, hreflang, sitemap, the same-origin check on form posts. |
 | `LANDING_TRUSTED_PROXY_HOPS` or `LANDING_CLIENT_IP_HEADER` | Optional: where to read the visitor address from (see "Production"). |
 | `PORTAL_DEMO_DIST` | Where `sync:demo` reads the portal demo build from. |
@@ -56,7 +56,7 @@ All in `.env.local` (never committed; `.env.example` is the template).
 | `/api/revalidate` | Signed refresh call from the backend (HMAC-SHA256). |
 | `/sitemap.xml`, `/robots.txt` | From the published page list. |
 
-Block types render one component each (`components/blocks`). Button actions map as `start_trial` to `PORTAL_TRIAL_URL`, `book_demo` to the contact page's demo request form, `open_demo` to `/demo/app`, `contact` to the contact page, `page:<slug>` and `url:<https>` as written.
+Block types render one component each (`components/blocks`). Button actions map as `start_trial` to `PORTAL_TRIAL_URL` (default: the Contact page's trial request form), `book_demo` to the contact page's demo request form, `open_demo` to `/demo/app`, `contact` to the contact page, `page:<slug>` and `url:<https>` as written.
 
 ## How data is cached
 

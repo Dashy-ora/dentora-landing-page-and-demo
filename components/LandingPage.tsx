@@ -38,8 +38,9 @@ export async function LandingPage({ lang, params }: { lang: Lang; params: Promis
         <Blocks blocks={data.blocks} ctx={ctx} />
         {slug === "contact" ? (
           <section className="py-10 md:py-14">
-            <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 md:grid-cols-2 md:px-6">
+            <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 md:grid-cols-2 lg:grid-cols-3 md:px-6">
               <FormSection lang={lang} form="demo_request" anchor="demo-request" />
+              <FormSection lang={lang} form="trial_interest" anchor="trial-interest" />
               <FormSection lang={lang} form="contact" anchor="contact-form" />
             </div>
           </section>

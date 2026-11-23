@@ -62,3 +62,11 @@ test("media URLs: absolute kept, root-relative joined to the backend origin", ()
   assert.equal(mediaUrl("https://cdn.example/a.png", env), "https://cdn.example/a.png");
   assert.equal(mediaUrl("/storage/a.png", env), "http://127.0.0.1:8000/storage/a.png");
 });
+
+test("start_trial defaults to the trial request form, in the visitor's language, never the clinic portal", async () => {
+  const { trialUrl } = await import("../lib/config");
+  assert.equal(trialUrl({}), "/contact#trial-interest");
+  assert.deepEqual(resolveAction("start_trial", "ar", trialUrl({})), { href: "/contact#trial-interest", external: false });
+  assert.deepEqual(resolveAction("start_trial", "en", trialUrl({})), { href: "/en/contact#trial-interest", external: false });
+  assert.deepEqual(resolveAction("start_trial", "en", "https://signup.example.com"), { href: "https://signup.example.com", external: true });
+});

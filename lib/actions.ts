@@ -10,8 +10,11 @@ export type ResolvedAction = { href: string; external: boolean };
  */
 export function resolveAction(action: string, lang: Lang, trialUrl: string, demoApp = true): ResolvedAction | null {
   switch (action) {
-    case "start_trial":
-      return { href: trialUrl, external: /^https?:\/\//i.test(trialUrl) };
+    case "start_trial": {
+      // A same-site path is a landing page, so English visitors stay under /en.
+      const href = lang === "en" && trialUrl.startsWith("/") && !trialUrl.startsWith("/en") ? `/en${trialUrl}` : trialUrl;
+      return { href, external: /^https?:\/\//i.test(href) };
+    }
     case "book_demo":
       return { href: `${pagePath("contact", lang)}#demo-request`, external: false };
     case "open_demo":

@@ -23,7 +23,7 @@ export function siteUrl(env: Record<string, string | undefined> = process.env): 
 }
 
 export function trialUrl(env: Record<string, string | undefined> = process.env): string {
-  return env.PORTAL_TRIAL_URL?.trim() || "/contact";
+  return env.PORTAL_TRIAL_URL?.trim() || "/contact#trial-interest";
 }
 
 /** Image URLs from the backend: absolute as-is, root-relative against the backend origin. */

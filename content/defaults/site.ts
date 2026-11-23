@@ -91,7 +91,7 @@ export function defaultDemo(): Demo {
     modules: ALL_MODULES,
     clinic: { name: { ar: "عيادة نايل سمايل التجريبية", en: "Nile Smile Demo" }, logo_url: null },
     welcome: { ar: "مرحبا بك في النسخة التجريبية من دنتورا. كل البيانات هنا تجريبية.", en: "Welcome to the Dentora demo. Everything here is sample data." },
-    trial: { url: "/contact", label: { ar: "ابدأ تجربة حقيقية", en: "Start a real trial" } },
+    trial: { url: "/contact#trial-interest", label: { ar: "ابدأ تجربة حقيقية", en: "Start a real trial" } },
   };
 }
 
