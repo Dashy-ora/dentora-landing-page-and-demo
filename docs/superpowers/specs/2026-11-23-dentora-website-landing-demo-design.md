@@ -277,7 +277,18 @@ Sidebar **Website** (shown with `website.read`), four pages:
 - **Layout and blocks:**
   - Arabic `dir="rtl"` by default, with a language switch.
   - Each block type is one component.
-  - The Dentora identity: the Sora font and the palette from `DENTORA_Assets_Theme_Identity`, consistent with the clinic portal.
+- **Look: the Dentora UI kit, exactly as the clinic portal uses it (owner decision).**
+  - Copy these from clinic-portal (`src/index.css`, `src/styles/tokens.css`, `src/styles/kit.css`):
+    - the `@theme inline` mapping;
+    - the `--dt-*` light/dark tokens;
+    - the `dt-*` component classes (buttons, inputs, cards, segments, labels);
+    - the brand palette and ramp (teal `#0c717f`, navy `#15334a`, ink, mint, fog, `brand-50…900`);
+    - the Flowbite plugin;
+    - the self-hosted fonts (Sora for Latin and digits, Tajawal for Arabic via `unicode-range`) and the same `font-sans` stack;
+    - light/dark mode by `.dark` on `<html>`.
+  - The landing site's marketing blocks are composed only from these tokens and kit classes, with no new colours or fonts. Logos come from `DENTORA_Assets_Theme_Identity`.
+  - The create-next-app defaults (Geist and Arial in `app/globals.css`) are removed.
+  - A drift test fails if the copied kit files differ from the portal's versions, using a pinned copy with a checksum.
 - **Data:**
   - **Fetching:** server components fetch the public W61 endpoints, cached by area tag with a short safety `cacheLife`.
   - **Offers:** filtered again by `starts_at`/`ends_at` at request time.
