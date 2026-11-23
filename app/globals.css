@@ -1,26 +1,182 @@
 @import "tailwindcss";
+@import "./styles/tokens.css";
+@import "./styles/kit.css";
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Dark variant = .dark on <html> (set by the pre-paint script in index.html and by src/theme). Matches Flowbite's selectors. */
+@custom-variant dark (&:where(.dark, .dark *));
 
+/* ---------- Fonts (spec §12.1): self-hosted (public/fonts, SIL OFL 1.1), WOFF2 first with TTF fallback.
+   One stack everywhere: Latin + digits in Sora; Tajawal is downloaded only when Arabic text is present (unicode-range). ---------- */
+@font-face { font-family: "Sora"; src: url("/fonts/sora/Sora-Regular.woff2") format("woff2"), url("/fonts/sora/Sora-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Sora"; src: url("/fonts/sora/Sora-Medium.woff2") format("woff2"), url("/fonts/sora/Sora-Medium.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Sora"; src: url("/fonts/sora/Sora-SemiBold.woff2") format("woff2"), url("/fonts/sora/Sora-SemiBold.ttf") format("truetype"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Sora"; src: url("/fonts/sora/Sora-Bold.woff2") format("woff2"), url("/fonts/sora/Sora-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Tajawal"; src: url("/fonts/tajawal/Tajawal-Regular.woff2") format("woff2"), url("/fonts/tajawal/Tajawal-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F; }
+@font-face { font-family: "Tajawal"; src: url("/fonts/tajawal/Tajawal-Medium.woff2") format("woff2"), url("/fonts/tajawal/Tajawal-Medium.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F; }
+@font-face { font-family: "Tajawal"; src: url("/fonts/tajawal/Tajawal-Bold.woff2") format("woff2"), url("/fonts/tajawal/Tajawal-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F; }
+
+/* ---------- Tailwind theme mapping (utilities resolve the --dt-* var at use time, so they follow .dark) ---------- */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Sora", "Tajawal", system-ui, sans-serif;
+  --font-display: "Sora", "Tajawal", system-ui, sans-serif;
+  --font-arabic: "Sora", "Tajawal", system-ui, sans-serif;
+  /* fixed brand palette (same in both themes) */
+  --color-ink: #20272d;
+  --color-navy: #15334a;
+  --color-teal: #0c717f;
+  --color-teal-light: #4cb7c6;
+  --color-danger-light: #ef8379;
+  --color-mint: #d8e9e3;
+  --color-fog: #f4f4f3;
+
+  /* brand ramp: keeps brand-* utilities on-palette. 600 = primary, 700 = hover, 900 = navy. */
+  --color-brand-50: #eef6f3;
+  --color-brand-100: #d8e9e3;
+  --color-brand-200: #b2d6d2;
+  --color-brand-300: #7fbcc2;
+  --color-brand-400: #4cb7c6;
+  --color-brand-500: #1a8593;
+  --color-brand-600: #0c717f;
+  --color-brand-700: #0a5f6b;
+  --color-brand-800: #094d57;
+  --color-brand-900: #15334a;
+
+  /* semantic, theme-aware utilities: bg-page, bg-surface, text-fg, border-line, ... */
+  --color-page: var(--dt-page);
+  --color-surface: var(--dt-surface);
+  --color-surface-sunken: var(--dt-surface-sunken);
+  --color-surface-muted: var(--dt-surface-muted);
+  --color-line: var(--dt-border);
+  --color-line-strong: var(--dt-border-strong);
+  --color-fg: var(--dt-text);
+  --color-fg-secondary: var(--dt-text-secondary);
+  --color-fg-muted: var(--dt-text-muted);
+  --color-fg-faint: var(--dt-text-faint);
+  --color-fg-strong: var(--dt-heading-strong);
+  --color-primary: var(--dt-primary);
+  --color-primary-hover: var(--dt-primary-hover);
+  --color-on-primary: var(--dt-on-primary);
+  --color-accent: var(--dt-accent);
+  --color-tonal: var(--dt-secondary-bg);
+  --color-tonal-hover: var(--dt-secondary-hover);
+  --color-on-tonal: var(--dt-secondary-text);
+  --color-danger: var(--dt-danger);
+  --color-danger-hover: var(--dt-danger-hover);
+  --color-danger-fg: var(--dt-danger-text);
+  --color-success: var(--dt-success);
+  --color-success-soft: var(--dt-success-bg);
+  --color-success-line: var(--dt-success-border);
+  --color-warning: var(--dt-warning);
+  --color-warning-soft: var(--dt-warning-bg);
+  --color-warning-line: var(--dt-warning-border);
+  --color-error: var(--dt-error);
+  --color-error-soft: var(--dt-error-bg);
+  --color-error-line: var(--dt-error-border);
+  --color-info-soft: var(--dt-info-pill-bg);
+  --color-info-line: var(--dt-info-pill-border);
+  --color-info-fg: var(--dt-info-pill-text);
+  --color-focus: var(--dt-focus);
+  --color-sidebar: var(--dt-sidebar-bg);
+  --color-topbar: var(--dt-topbar-bg);
+  --color-selected: var(--dt-table-selected);
+  --color-row-hover: var(--dt-table-row-hover);
+  --color-skeleton: var(--dt-skeleton);
+  --color-hero: var(--dt-hero-bg);
+  --color-highlight: var(--dt-highlight-bg);
+  --color-on-highlight: var(--dt-highlight-text);
+  --color-scrim: var(--dt-scrim);
+
+  /* Flowbite 4 semantic aliases, so copied Flowbite markup follows the Dentora tokens. */
+  --color-brand: var(--dt-primary);
+  --color-brand-strong: var(--dt-primary-hover);
+  --color-brand-soft: var(--dt-secondary-bg);
+  --color-brand-softer: var(--dt-secondary-bg);
+  --color-brand-medium: var(--dt-secondary-hover);
+  --color-brand-subtle: var(--dt-secondary-border);
+  --color-fg-brand: var(--dt-accent);
+  --color-fg-brand-strong: var(--dt-heading-strong);
+  --color-heading: var(--dt-text);
+  --color-body: var(--dt-text-secondary);
+  --color-body-subtle: var(--dt-text-muted);
+  --color-neutral-primary: var(--dt-surface);
+  --color-neutral-primary-soft: var(--dt-surface);
+  --color-neutral-secondary: var(--dt-page);
+  --color-neutral-secondary-medium: var(--dt-surface-sunken);
+  --color-neutral-tertiary: var(--dt-surface-muted);
+  --color-default: var(--dt-border);
+  --color-default-medium: var(--dt-border-strong);
+  --color-light: var(--dt-border);
+  --color-danger-soft: var(--dt-error-bg);
+  --color-fg-danger: var(--dt-danger-text);
+  --color-disabled: var(--dt-disabled-bg);
+  --color-fg-disabled: var(--dt-disabled-text);
+  --radius-base: 10px;
+
+  /* Shell breakpoint (spec §11.2): below 820px the sidebar is forced to the 72px rail (rem so it sorts between md and lg). */
+  --breakpoint-shell: 51.25rem;
+  /* Tiles (spec §11.2): bento tile grids stack to one column below 1000px. */
+  --breakpoint-tiles: 62.5rem;
+
+  --radius-card: 24px;
+  --radius-control: 10px;
+  --radius-control-sm: 8px;
+  --radius-control-lg: 12px;
+  --radius-tile: 16px;
+
+  --shadow-xs: var(--dt-shadow-xs);
+  --shadow-overlay: var(--dt-shadow-overlay);
+
+  --text-display: 36px;   --text-display--line-height: 45px;   --text-display--letter-spacing: -0.025em;
+  --text-page-title: 24px; --text-page-title--line-height: 32px; --text-page-title--letter-spacing: -0.01em;
+  --text-title: 19px;     --text-title--line-height: 25.65px;  --text-title--letter-spacing: -0.01em;
+  --text-hero: 15px;      --text-hero--line-height: 1.625;
+  --text-btn-sm: 13px;    --text-btn-sm--line-height: 19.5px;
+  --text-btn-lg: 15px;    --text-btn-lg--line-height: 22.5px;
+  --text-caption: 11px;   --text-caption--line-height: 16.5px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ---------- Base ---------- */
+@layer base {
+  /* Unclassed borders/dividers take the kit line colour (Tailwind 4 defaults to currentColor). */
+  *, ::after, ::before, ::backdrop, ::file-selector-button { border-color: var(--dt-border); }
+  html { min-width: 320px; min-height: 100%; background: var(--dt-page); }
+  body { min-width: 320px; min-height: 100vh; margin: 0; background: var(--dt-page); color: var(--dt-text); font-family: var(--font-sans); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  /* Arabic tuning (spec §12.1): Tajawal reads ~1px smaller, so body is 15px with line-height ≥ 1.7; a connected script has no tracking and no case. */
+  :lang(ar) body, body:lang(ar) { font-size: 15px; line-height: 1.7; }
+  :lang(ar) * { letter-spacing: 0 !important; text-transform: none !important; }
+  #root { min-height: 100vh; }
+  button { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  :focus-visible { outline: 2px solid var(--dt-focus); outline-offset: 2px; }
+  ::selection { background: var(--dt-secondary-bg); color: var(--dt-heading-strong); }
+  code, kbd, samp, pre, .font-mono { font-variant-ligatures: none; }
+  /* Numbers: tabular, lining, Western digits (formatters use numberingSystem latn). */
+  .tabular-nums, table, time, .font-mono { font-variant-numeric: tabular-nums lining-nums; }
+  a { color: var(--dt-link); }
+
+  /* Flowbite plugin form controls → Dentora tokens (its :checked rules paint with currentColor). */
+  [type='checkbox'], [type='radio'] { color: var(--dt-primary); background-color: var(--dt-input-bg); border-color: var(--dt-input-border); }
+  [type='checkbox'], [type='radio'] { width: 18px; height: 18px; flex-shrink: 0; }
+  [type='checkbox'] { border-radius: 4px; }
+  [type='checkbox']:focus, [type='radio']:focus { --tw-ring-color: var(--dt-input-ring); --tw-ring-offset-color: var(--dt-page); }
+  [type='checkbox']:checked, [type='radio']:checked { background-color: currentColor; border-color: transparent; }
+  [type='checkbox']:disabled, [type='radio']:disabled { opacity: 1; background-color: var(--dt-input-disabled-bg); cursor: not-allowed; }
+  [type='checkbox']:focus-visible, [type='radio']:focus-visible { outline: 2px solid var(--dt-focus); outline-offset: 2px; }
+  details > summary { cursor: pointer; }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* ---------- Landing site additions (LANDING-01): layout helpers only, composed from the kit tokens above. No new colours or fonts. ---------- */
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { display: flex; flex-direction: column; }
+  a { text-decoration: none; }
+  /* The kit's 15px lead size. `text-hero` is avoided because --color-hero (teal) makes that utility name ambiguous. */
+  .landing-lead { font-size: var(--text-hero); line-height: var(--text-hero--line-height); }
+  .landing-prose a { text-decoration: underline; text-underline-offset: 3px; }
 }

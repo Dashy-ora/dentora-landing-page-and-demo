@@ -30,8 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files: real ones stay local, only the template is committed
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# LANDING-01: the clinic-portal demo build is copied in by `npm run sync:demo` and never committed.
+/public/demo/app
+
+# local tooling state
+/.impeccable

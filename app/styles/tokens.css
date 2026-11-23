@@ -1,0 +1,255 @@
+/* Dentora UI Kit design tokens, Clinic Portal (docs/frontend/design-system.md). Shared with the SaaS dashboard except the
+   portal identity (spec §12.3): teal hero/welcome tiles and mint highlight surfaces. Precedence: Figma [F] + spec §10 decisions,
+   then the coded kit artifact (spec §11) for every sampled/derived value (dark tokens, states, pills, toast, dialog).
+   Light is the default; .dark on <html> switches every --dt-* role. The pre-paint script in index.html
+   sets .dark and data-theme before first paint, so no prefers-color-scheme media block is needed. */
+
+:root {
+  color-scheme: light;
+  --dt-page: #f4f4f3;
+  --dt-surface: #ffffff;
+  --dt-surface-sunken: #f4f4f3;
+  --dt-surface-muted: #ffffff;
+  --dt-border: #dde3e1;
+  --dt-border-strong: #dde3e1;
+  --dt-text: #20272d;
+  --dt-text-secondary: #5a6870;
+  --dt-text-muted: #5a6870;
+  --dt-text-faint: #bec8cb;
+  --dt-text-disabled: #5a6870;
+  --dt-heading-strong: #15334a;
+
+  --dt-sidebar-bg: #15334a;
+  --dt-sidebar-border: #15334a;
+  --dt-sidebar-text: #9aa9af;
+  --dt-sidebar-text-active: #ffffff;
+  --dt-sidebar-active-bg: #0c717f;
+  --dt-sidebar-hover-bg: rgb(255 255 255 / 0.08);
+  --dt-sidebar-divider: rgb(255 255 255 / 0.10);
+  --dt-sidebar-badge-bg: #d8e9e3;
+  --dt-sidebar-badge-text: #15334a;
+  --dt-sidebar-badge-border: transparent;
+  --dt-sidebar-focus: #4cb7c6;
+
+  --dt-topbar-bg: #ffffff;
+  --dt-topbar-border: #dde3e1;
+  --dt-topbar-icon: #5a6870;
+  --dt-search-bg: #f4f4f3;
+  --dt-search-border: transparent;
+  --dt-toggle-active-bg: transparent;
+  --dt-toggle-active-icon: #5a6870;
+  --dt-icon-hover: #f4f4f3;
+  --dt-notify-dot: #b0392f;
+  --dt-bottom-nav-text: #5a6870;
+
+  --dt-primary: #0c717f;
+  --dt-primary-hover: #095a66;
+  --dt-primary-active: #084c56;
+  --dt-primary-loading: rgb(12 113 127 / 0.9);
+  --dt-on-primary: #ffffff;
+  --dt-accent: #0c717f;
+  --dt-secondary-bg: #d8e9e3;
+  --dt-secondary-hover: #c9e0d8;
+  --dt-secondary-text: #0c717f;
+  --dt-secondary-border: transparent;
+  --dt-outline-bg: #ffffff;
+  --dt-outline-hover: #ffffff;
+  --dt-outline-text: #20272d;
+  --dt-ghost-text: #5a6870;
+  --dt-ghost-hover: #f4f4f3;
+  --dt-link: #0c717f;
+  --dt-danger: #b0392f;
+  --dt-danger-hover: #962f27;
+  --dt-danger-text: #b0392f;
+  --dt-disabled-bg: #e2e2e1;
+  --dt-disabled-text: #5a6870;
+  --dt-disabled-border: transparent;
+  --dt-focus: #0c717f;
+
+  --dt-input-bg: #ffffff;
+  --dt-input-border: #dde3e1;
+  --dt-input-focus: #0c717f;
+  --dt-input-disabled-bg: #f4f4f3;
+  --dt-input-disabled-text: #5a6870;
+  --dt-input-ring: rgb(12 113 127 / 0.22);
+  --dt-input-error-ring: rgb(176 57 47 / 0.15);
+  --dt-control-off: #dde3e1;
+
+  --dt-table-head-bg: transparent;
+  --dt-table-head-text: #5a6870;
+  --dt-table-row-hover: rgb(216 233 227 / 0.45);
+  --dt-table-selected: #d8e9e3;
+  --dt-table-selected-text: #15334a;
+
+  --dt-success: #1d7a52;  --dt-success-bg: rgb(29 122 82 / 0.10);  --dt-success-border: rgb(29 122 82 / 0.20);
+  --dt-warning: #94640f;  --dt-warning-bg: rgb(148 100 15 / 0.10); --dt-warning-border: rgb(148 100 15 / 0.20);
+  --dt-error: #b0392f;    --dt-error-bg: rgb(176 57 47 / 0.10);    --dt-error-border: rgb(176 57 47 / 0.20);
+  --dt-neutral: #5a6870;  --dt-neutral-bg: #f4f4f3;                --dt-neutral-border: #dde3e1;   --dt-neutral-dot: #9aa9af;
+  --dt-info-pill-bg: #d8e9e3; --dt-info-pill-border: rgb(12 113 127 / 0.15); --dt-info-pill-text: #15334a;
+
+  --dt-alert-info-bg: rgb(216 233 227 / 0.8);
+  --dt-alert-info-border: rgb(12 113 127 / 0.2);
+  --dt-alert-info-title: #15334a;
+  --dt-alert-info-body: rgb(21 51 74 / 0.85);
+  --dt-alert-info-icon: #0c717f;
+  --dt-alert-error-bg: rgb(176 57 47 / 0.10);
+  --dt-alert-error-border: rgb(176 57 47 / 0.30);
+  --dt-alert-error-title: #b0392f;
+  --dt-alert-error-body: rgb(32 39 45 / 0.9);
+  --dt-alert-success-bg: rgb(29 122 82 / 0.10);
+  --dt-alert-success-border: rgb(29 122 82 / 0.30);
+  --dt-alert-warning-bg: rgb(148 100 15 / 0.10);
+  --dt-alert-warning-border: rgb(148 100 15 / 0.30);
+  --dt-alert-body: rgb(32 39 45 / 0.9);
+
+  --dt-progress-track: #d8e9e3;
+  --dt-progress-fill: #0c717f;
+  --dt-skeleton: #e2e2e1;
+  --dt-skeleton-shine: #f4f4f3;
+  --dt-spinner-track: rgb(12 113 127 / 0.2);
+  --dt-toast-bg: #20272d;
+
+  /* Portal hero / welcome tiles are teal (the dashboard's are navy), spec §12.3. */
+  --dt-hero-bg: #0c717f;
+  --dt-highlight-bg: #d8e9e3;
+  --dt-highlight-text: #15334a;
+  --dt-smile: #0c717f;
+  --dt-appearance-bg: #0c717f;
+  --dt-accent-card-bg: #d8e9e3;
+  --dt-accent-card-border: rgb(12 113 127 / 0.25);
+  --dt-accent-card-text: #15334a;
+
+  --dt-avatar-soft-bg: #d8e9e3;
+  --dt-avatar-soft-text: #15334a;
+  --dt-avatar-soft-border: rgb(12 113 127 / 0.2);
+
+  --dt-code-bg: #f4f4f3;
+  --dt-code-text: #20272d;
+
+  --dt-shadow-xs: 0 1px 1px rgb(0 0 0 / 0.05);
+  --dt-shadow-knob: 0 1px 2px rgb(0 0 0 / 0.05);
+  --dt-shadow-overlay: 0 12px 32px -8px rgb(21 51 74 / 0.18);
+  --dt-scrim: rgb(21 51 74 / 0.55);
+
+  --dt-sidebar-width: 248px;
+  --dt-rail-width: 72px;
+  --dt-topbar-height: 61px;
+  --dt-bottom-nav-height: 64px;
+  --dt-content-max: 1200px;
+}
+
+:root.dark {
+  color-scheme: dark;
+  --dt-page: #161b1f;
+  --dt-surface: #20272d;
+  --dt-surface-sunken: #161b1f;
+  --dt-surface-muted: #1a2025;
+  --dt-border: #2c3740;
+  --dt-border-strong: #33414a;
+  --dt-text: #eef2f1;
+  --dt-text-secondary: #9aa9af;
+  /* Kit value #64748b is 3.6:1 on the dark input; lifted to the sampled top-bar icon grey for ≥4.5:1. */
+  --dt-text-muted: #8b999f;
+  --dt-text-faint: #33414a;
+  --dt-text-disabled: #586167;
+  --dt-heading-strong: #eef2f1;
+
+  --dt-sidebar-bg: #0f2535;
+  --dt-sidebar-border: rgb(51 65 74 / 0.6);
+  --dt-sidebar-hover-bg: rgb(255 255 255 / 0.08);
+  --dt-sidebar-badge-bg: #1d3b43;
+  --dt-sidebar-badge-text: #4cb7c6;
+  --dt-sidebar-badge-border: rgb(76 183 198 / 0.3);
+
+  --dt-topbar-bg: #20272d;
+  --dt-topbar-border: #33414a;
+  --dt-topbar-icon: #9aa9af;
+  --dt-search-bg: #161b1f;
+  --dt-search-border: #33414a;
+  --dt-toggle-active-bg: rgb(29 59 67 / 0.6);
+  --dt-toggle-active-icon: #4cb7c6;
+  --dt-icon-hover: rgb(255 255 255 / 0.05);
+  --dt-notify-dot: #ef8379;
+  --dt-bottom-nav-text: #94a3ad;
+
+  --dt-primary-hover: #095a66;
+  --dt-primary-active: #084c56;
+  --dt-accent: #4cb7c6;
+  --dt-secondary-bg: #1d3b43;
+  --dt-secondary-hover: #24474f;
+  --dt-secondary-text: #4cb7c6;
+  --dt-secondary-border: rgb(76 183 198 / 0.3);
+  --dt-outline-bg: #20272d;
+  --dt-outline-hover: #20272d;
+  --dt-outline-text: #eef2f1;
+  --dt-ghost-text: #9aa9af;
+  --dt-ghost-hover: rgb(255 255 255 / 0.05);
+  --dt-link: #4cb7c6;
+  --dt-danger-hover: #c2463b;
+  --dt-danger-text: #ef8379;
+  --dt-disabled-bg: transparent;
+  --dt-disabled-text: #586167;
+  --dt-disabled-border: #283138;
+  --dt-focus: #4cb7c6;
+
+  --dt-input-bg: #20272d;
+  --dt-input-border: #33414a;
+  --dt-input-focus: #4cb7c6;
+  --dt-input-disabled-bg: #161b1f;
+  --dt-input-disabled-text: #9aa9af;
+  --dt-input-ring: rgb(76 183 198 / 0.22);
+  --dt-input-error-ring: rgb(239 131 121 / 0.2);
+  --dt-control-off: #33414a;
+
+  --dt-table-head-bg: #1a2025;
+  --dt-table-head-text: #9aa9af;
+  --dt-table-row-hover: rgb(29 59 67 / 0.45);
+  --dt-table-selected: #1d3b43;
+  --dt-table-selected-text: #ffffff;
+
+  --dt-success: #4cc38a;  --dt-success-bg: rgb(76 195 138 / 0.15);  --dt-success-border: transparent;
+  --dt-warning: #e0b050;  --dt-warning-bg: rgb(224 176 80 / 0.16);  --dt-warning-border: transparent;
+  --dt-error: #ef8379;    --dt-error-bg: rgb(239 131 121 / 0.14);   --dt-error-border: transparent;
+  --dt-neutral: #9aa9af;  --dt-neutral-bg: rgb(154 169 175 / 0.12); --dt-neutral-border: rgb(154 169 175 / 0.25); --dt-neutral-dot: #9aa9af;
+  --dt-info-pill-bg: #1d3b43; --dt-info-pill-border: transparent; --dt-info-pill-text: #4cb7c6;
+
+  --dt-alert-info-bg: #1d3b43;
+  --dt-alert-info-border: transparent;
+  --dt-alert-info-title: #eef2f1;
+  --dt-alert-info-body: rgb(238 242 241 / 0.8);
+  --dt-alert-info-icon: #4cb7c6;
+  --dt-alert-error-bg: rgb(239 131 121 / 0.10);
+  --dt-alert-error-border: rgb(239 131 121 / 0.40);
+  --dt-alert-error-title: #ef8379;
+  --dt-alert-error-body: rgb(238 242 241 / 0.8);
+  --dt-alert-success-bg: rgb(76 195 138 / 0.12);
+  --dt-alert-success-border: rgb(76 195 138 / 0.30);
+  --dt-alert-warning-bg: rgb(224 176 80 / 0.12);
+  --dt-alert-warning-border: rgb(224 176 80 / 0.30);
+  --dt-alert-body: rgb(238 242 241 / 0.8);
+
+  --dt-progress-track: #1d3b43;
+  --dt-progress-fill: #4cb7c6;
+  --dt-skeleton: #33414a;
+  --dt-skeleton-shine: #161b1f;
+  --dt-spinner-track: #1d3b43;
+
+  --dt-highlight-bg: #1d3b43;
+  --dt-highlight-text: #eef2f1;
+  --dt-smile: #4cb7c6;
+
+  --dt-accent-card-bg: #1d3b43;
+  --dt-accent-card-border: transparent;
+  --dt-accent-card-text: #eef2f1;
+
+  --dt-avatar-soft-bg: #1d3b43;
+  --dt-avatar-soft-text: #4cb7c6;
+  --dt-avatar-soft-border: rgb(76 183 198 / 0.3);
+
+  --dt-code-bg: #161b1f;
+  --dt-code-text: #eef2f1;
+
+  --dt-shadow-xs: none;
+  --dt-shadow-knob: none;
+  --dt-shadow-overlay: 0 12px 32px -8px rgb(0 0 0 / 0.5);
+}

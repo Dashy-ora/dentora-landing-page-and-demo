@@ -1,0 +1,25 @@
+{
+  "source": "clinic-portal src/styles + public/fonts + src/index.css",
+  "portalCommit": "0695c37",
+  "indexCss": "4a186541074d9171ddb3b85d85d822eaa4785c5288f79296ae2c1e5c3ff761ef",
+  "files": {
+    "app/styles/tokens.css": "fb5807626ef0a9ee6408ab61579a5b61ab4a25d0f76f401380258a98b7380323",
+    "app/styles/kit.css": "88ea98d48685f6a80ccb30835ac755b5c8768064f3273ca81c338114537af6da",
+    "public/fonts/sora/OFL.txt": "a994e9f7ae850cc03640d4a909ffbb895ccb44638efef2f235000cc9fa13783e",
+    "public/fonts/sora/Sora-Bold.ttf": "7917122683e80cb2f3dcea1efd2381a4b2c010501e64ffe0b28c739751118867",
+    "public/fonts/sora/Sora-Bold.woff2": "a18f97b072f586a8fd40caa4ff63b9f873540d10d1a6c0032017615c8bd4bde3",
+    "public/fonts/sora/Sora-Medium.ttf": "0816b0ca09d9158fdb3af77466d7319fe14b0217d8fdb05b478286e7d1e0a118",
+    "public/fonts/sora/Sora-Medium.woff2": "98aad7046fd444801cd92baee84d7ff69d5b402ff142c2090b815db17e635c06",
+    "public/fonts/sora/Sora-Regular.ttf": "647631fce2f0cda4e5e87209bbd6a96b18042577d8917075e75b2eeb901ca9cd",
+    "public/fonts/sora/Sora-Regular.woff2": "5112e378d8558bf16eeafe25ebc695d003c267a31d22bb6a8156521a999fd9b4",
+    "public/fonts/sora/Sora-SemiBold.ttf": "a566f4a4e9ba8ee5c06b341305f63dddedc11348765d33ec8a65d905c0148e8b",
+    "public/fonts/sora/Sora-SemiBold.woff2": "22845d0006699115a77ae702cd95c9f1299cf72d985835f72cd4281d0c1b0c5d",
+    "public/fonts/tajawal/OFL.txt": "9b584984f9db0ee30347391a76eff9c0a6b03dc450c3c6afe3757a2cb3a4db87",
+    "public/fonts/tajawal/Tajawal-Bold.ttf": "0342ab6b74b6bd1b4b5bf7beda45a9734a2b3147a31e8a3a45b6a3417a52d9d7",
+    "public/fonts/tajawal/Tajawal-Bold.woff2": "c01dbdb088b391a84a44252371614e857c02f2fdf36f8ef86652087326da5b04",
+    "public/fonts/tajawal/Tajawal-Medium.ttf": "1ff8bd943a261c9dd7906bdb1993cab87b6d925a7fb5f848cdb51ed301531090",
+    "public/fonts/tajawal/Tajawal-Medium.woff2": "4f5e8e8a044509a89d266c839c269b653df25f5a9af080b91330bf7111b82f0e",
+    "public/fonts/tajawal/Tajawal-Regular.ttf": "6882892da3e03527d5db2bbab3b48bde6ef2e878a43f522d1a4eebda90010a19",
+    "public/fonts/tajawal/Tajawal-Regular.woff2": "0a65b27a6b4ca0498a5034dfa20181745c5ef9141d54919726832bce99533b19"
+  }
+}

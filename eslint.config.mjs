@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // the synced portal demo build (see npm run sync:demo)
+    "public/demo/**",
   ]),
 ]);
 
