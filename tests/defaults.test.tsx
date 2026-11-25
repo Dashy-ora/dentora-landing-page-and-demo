@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test, { beforeEach } from "node:test";
@@ -142,6 +142,20 @@ test("demoBuildAvailable looks for public/demo/app/index.html", () => {
   assert.equal(demoBuildAvailable(root), false);
   writeFileSync(path.join(root, "public", "demo", "app", "index.html"), "<html></html>");
   assert.equal(demoBuildAvailable(root), true);
+});
+
+test("on the server the demo check is a build-time flag, because Vercel serves public/ from the CDN, not from the function", () => {
+  const before = process.env.DENTORA_DEMO_BUILD;
+  try {
+    process.env.DENTORA_DEMO_BUILD = "1";
+    assert.equal(demoBuildAvailable(), true);
+    process.env.DENTORA_DEMO_BUILD = "0";
+    assert.equal(demoBuildAvailable(), false);
+  } finally {
+    if (before === undefined) delete process.env.DENTORA_DEMO_BUILD; else process.env.DENTORA_DEMO_BUILD = before;
+  }
+  const config = readFileSync(path.join(import.meta.dirname, "..", "next.config.ts"), "utf8");
+  assert.match(config, /DENTORA_DEMO_BUILD: existsSync\(path\.join\(process\.cwd\(\), "public", "demo", "app", "index\.html"\)\) \? "1" : "0"/);
 });
 
 const contact = defaultForm("en", "contact");

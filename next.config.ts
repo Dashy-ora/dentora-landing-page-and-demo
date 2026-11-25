@@ -1,6 +1,13 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Whether the portal demo build is present, decided when the site is built (see lib/demo-build.ts): on Vercel, public/ is
+  // served from the CDN and is not readable from the server functions at request time.
+  env: {
+    DENTORA_DEMO_BUILD: existsSync(path.join(process.cwd(), "public", "demo", "app", "index.html")) ? "1" : "0",
+  },
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,

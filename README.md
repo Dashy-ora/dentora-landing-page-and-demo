@@ -82,8 +82,30 @@ npm run build
 - **Read limit.** The backend limits public reads to 300 per minute per source address. All server-side reads come from this server's address; caching keeps the real number far below that, but do not run many uncached instances behind one address without checking.
 - **Form submissions and the visitor address.** The browser posts to this site, which forwards to the backend with the visitor address as `X-Forwarded-For`, so the backend's limit of 5 per address per form per 10 minutes applies per visitor. The backend honours that header only from addresses listed in its `IDENTITY_TRUSTED_PROXIES`: add this server's egress address there. On this side, say where the visitor address comes from: `LANDING_TRUSTED_PROXY_HOPS=1` when exactly one reverse proxy appends to `X-Forwarded-For`, or `LANDING_CLIENT_IP_HEADER=cf-connecting-ip` (or similar) when a CDN overwrites a header. With neither set the header is never trusted (a visitor could otherwise pick their own address) and the backend sees this server's address, so all visitors share one limit. Local development works that way.
 - **Refresh call.** Set `LANDING_REVALIDATE_SECRET` here and the same value plus `LANDING_REVALIDATE_URL=https://<site>/api/revalidate` on the backend. The backend signs `"<timestamp>.<raw body>"` with HMAC-SHA256 (`X-Dentora-Signature: sha256=<hex>`, `X-Dentora-Timestamp`); this site rejects other signatures and timestamps more than 5 minutes away. Without it, content still refreshes within about a minute.
-- **TLS and hosting.** Serve the site over HTTPS behind your proxy/CDN. Set `SITE_URL` to the public https origin. The demo build must be synced before the build, as above.
+- **TLS and hosting.** Serve the site over HTTPS behind your proxy/CDN. Set `SITE_URL` to the public https origin. The demo build is committed in `public/demo/app`; re-sync and commit it after portal demo changes.
 - **Images.** Backend media URLs are used as returned (absolute, or root-relative to the backend origin). Production image storage is a go-live item on the backend side.
+
+## Deploy on Vercel
+
+The repo deploys as is: Next.js is detected, `vercel.json` pins `npm ci` and `npm run build`, Node is `24.x` (`package.json` engines), and the demo build is committed in `public/demo/app`, so nothing outside this repo is needed at build time. With no backend configured the site and the demo still work (built-in content, demo in the browser).
+
+1. In Vercel: **Add New > Project**, import `Dashy-ora/dentora-landing-page-and-demo`, keep the root directory and the detected settings. Production branch: `main`.
+2. **Environment variables** (Production; set Preview too if previews should reach a backend):
+
+   | Variable | Value |
+   |---|---|
+   | `SITE_URL` | the public https origin, for example `https://dentora.example` |
+   | `DENTORA_API_URL` | the backend's https origin; leave unset until the backend is hosted (built-in content is served) |
+   | `LANDING_REVALIDATE_SECRET` | 16+ characters, the same value as the backend's `LANDING_REVALIDATE_SECRET` |
+   | `LANDING_CLIENT_IP_HEADER` | `x-real-ip` (Vercel overwrites it with the visitor address) |
+   | `PORTAL_TRIAL_URL` | optional, see Configuration |
+
+   Do not set `PORTAL_DEMO_DIST` or `LANDING_TRUSTED_PROXY_HOPS` on Vercel.
+3. **Domain:** add it under the project's Domains, then make `SITE_URL` match it and redeploy.
+4. **Backend side:** `LANDING_REVALIDATE_URL=https://<domain>/api/revalidate` and the same `LANDING_REVALIDATE_SECRET`. Vercel functions have no fixed outgoing address, so the backend cannot list this site in `IDENTITY_TRUSTED_PROXIES` by address: until the backend trusts this site another way, it sees Vercel's addresses instead of the visitor's for the per-address form limit.
+5. **Updating the demo:** in the portal `npm run build:demo`, here `npm run sync:demo`, then commit `public/demo/app` and push; Vercel redeploys.
+
+Notes: the "Open the demo" buttons depend on `public/demo/app/index.html` being present when the site is BUILT (`DENTORA_DEMO_BUILD`, see `lib/demo-build.ts`), because Vercel serves `public/` from its CDN, not from the server functions. Preview deployments behind Vercel Authentication cannot read their own `/api/site-slugs`, so unknown pages there render the site instead of a 404; production is unaffected. The "last good copy" of backend content is kept per function instance, so after a cold start during a backend outage the built-in content answers.
 
 ## Running with no backend
 
