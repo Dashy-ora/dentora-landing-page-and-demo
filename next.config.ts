@@ -20,6 +20,8 @@ const nextConfig: NextConfig = {
       // afterFiles: real files in public/ win, and this runs before the /[[...slug]] catch-all pages would claim the URL.
       afterFiles: [
         { source: "/demo/app", destination: "/demo/app/index.html" },
+        // A path with a dot that matched no file is a missing asset: a real 404, not the catch-all page's HTML.
+        { source: "/demo/app/:path(.*\\..*)", destination: "/api/demo-missing" },
         { source: "/demo/app/:path([^.]*)", destination: "/demo/app/index.html" },
       ],
     };

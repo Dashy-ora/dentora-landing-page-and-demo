@@ -1,0 +1,23 @@
+/* Clinic-portal-only styles (CP4-05): info tooltip and combobox. Kit tokens only; tokens.css and kit.css stay byte-identical to the landing copy. */
+@layer components {
+  .dt-label-row { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; min-height: 20px; }
+  .dt-label-row > .dt-label { margin-bottom: 0; }
+  .dt-control-row { display: inline-flex; align-items: center; gap: 4px; }
+  .dt-info-btn { display: inline-grid; place-items: center; width: 20px; height: 20px; flex: none; padding: 0; border: 0; border-radius: 9999px; background: transparent; color: var(--dt-text-muted); cursor: help; }
+  .dt-info-btn:hover, .dt-info-btn[aria-expanded='true'] { color: var(--dt-accent); background: var(--dt-ghost-hover); }
+  .dt-info-btn:focus-visible { outline: 2px solid var(--dt-focus); outline-offset: 1px; }
+  .dt-info-tip { z-index: 60; max-width: min(260px, calc(100vw - 16px)); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--dt-border-strong); background: var(--dt-surface); color: var(--dt-text); box-shadow: var(--dt-shadow-overlay); font-size: 12px; line-height: 17px; font-weight: 400; text-align: start; pointer-events: none; }
+  .dt-combo { position: relative; }
+  .dt-combo-input { padding-inline-end: 56px; text-overflow: ellipsis; }
+  .dt-combo-tools { position: absolute; inset-block: 0; inset-inline-end: 6px; display: flex; align-items: center; gap: 2px; color: var(--dt-text-muted); }
+  .dt-combo-clear { display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 9999px; background: transparent; color: var(--dt-text-muted); }
+  .dt-combo-clear:hover { background: var(--dt-ghost-hover); color: var(--dt-text); }
+  .dt-combo-clear:focus-visible { outline: 2px solid var(--dt-focus); }
+  .dt-combo-list { z-index: 60; overflow-y: auto; overscroll-behavior: contain; padding: 4px; border-radius: 10px; border: 1px solid var(--dt-border-strong); background: var(--dt-surface); color: var(--dt-text); box-shadow: var(--dt-shadow-overlay); }
+  .dt-combo-option { display: flex; width: 100%; min-height: 44px; flex-direction: column; justify-content: center; gap: 1px; padding: 6px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--dt-text); font-size: 14px; line-height: 20px; text-align: start; cursor: pointer; }
+  .dt-combo-option[data-active='true'] { background: var(--dt-ghost-hover); }
+  .dt-combo-option[aria-selected='true'] { color: var(--dt-accent); font-weight: 600; }
+  .dt-combo-hint { font-size: 12px; line-height: 16px; font-weight: 400; color: var(--dt-text-secondary); }
+  .dt-combo-note { padding: 8px 10px; font-size: 12px; line-height: 16px; color: var(--dt-text-secondary); }
+  .dt-chip { display: inline-flex; max-width: 100%; align-items: center; gap: 4px; padding-block: 2px; padding-inline: 10px 4px; border-radius: 9999px; border: 1px solid var(--dt-info-pill-border); background: var(--dt-info-pill-bg); color: var(--dt-info-pill-text); font-size: 12px; line-height: 20px; font-weight: 500; }
+}

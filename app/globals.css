@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./styles/tokens.css";
 @import "./styles/kit.css";
+@import "./styles/portal.css";
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
 
@@ -146,7 +147,7 @@
   /* Arabic tuning (spec §12.1): Tajawal reads ~1px smaller, so body is 15px with line-height ≥ 1.7; a connected script has no tracking and no case. */
   :lang(ar) body, body:lang(ar) { font-size: 15px; line-height: 1.7; }
   :lang(ar) * { letter-spacing: 0 !important; text-transform: none !important; }
-  #root { min-height: 100vh; }
+  #root { min-height: calc(100vh - var(--shell-top, 0px)); }
   button { cursor: pointer; }
   button:disabled { cursor: not-allowed; }
   :focus-visible { outline: 2px solid var(--dt-focus); outline-offset: 2px; }

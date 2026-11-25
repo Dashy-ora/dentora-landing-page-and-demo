@@ -1,7 +1,7 @@
 {
   "source": "clinic-portal src/styles + public/fonts + src/index.css",
-  "portalCommit": "0695c37",
-  "indexCss": "4a186541074d9171ddb3b85d85d822eaa4785c5288f79296ae2c1e5c3ff761ef",
+  "portalCommit": "92cd3f3",
+  "indexCss": "a07fba8577de23ac77f6db9c4a3943d8cec4a775e916275d8a3fffd9705ad096",
   "files": {
     "app/styles/tokens.css": "fb5807626ef0a9ee6408ab61579a5b61ab4a25d0f76f401380258a98b7380323",
     "app/styles/kit.css": "88ea98d48685f6a80ccb30835ac755b5c8768064f3273ca81c338114537af6da",

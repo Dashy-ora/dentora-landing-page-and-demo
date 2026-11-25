@@ -84,6 +84,15 @@ async function scenario(name, apiUrl, port) {
     check(form.status === 503 || form.status === 404, `form post -> ${form.status}, expected 503 or 404`);
     check((await fetch(`${base}/api/revalidate`, { method: "POST", body: "{}" })).status === 503, "revalidate without a secret is not 503");
     if (demoBuild) check((await fetch(`${base}/demo/app`)).status === 200, "/demo/app is not 200");
+    if (demoBuild) {
+      const script = /src="(\/demo\/app\/assets\/[^"]+\.js)"/.exec(await (await fetch(`${base}/demo/app`)).text())?.[1];
+      const real = script ? await fetch(`${base}${script}`) : null;
+      check(real?.status === 200 && /javascript/.test(real.headers.get("content-type") ?? ""), `demo script ${script} -> ${real?.status} ${real?.headers.get("content-type")}`);
+      const missing = await fetch(`${base}/demo/app/assets/missing-0000.js`);
+      check(missing.status === 404 && !/html/.test(missing.headers.get("content-type") ?? ""), `missing demo file -> ${missing.status} ${missing.headers.get("content-type")}, expected a plain 404`);
+      const deep = await fetch(`${base}/demo/app/c/00000000-0000-4000-8000-000000000000/patients`);
+      check(deep.status === 200 && /html/.test(deep.headers.get("content-type") ?? ""), `demo deep link -> ${deep.status}`);
+    }
     const demoSettings = await fetch(`${base}/api/v1/public/site/demo`);
     const demoBody = demoSettings.status === 200 ? await demoSettings.json() : null;
     check(demoSettings.status === 200 && demoBody?.data?.enabled === true && Array.isArray(demoBody?.data?.modules), `demo settings -> ${demoSettings.status}, expected 200 with the default settings`);

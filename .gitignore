@@ -42,7 +42,6 @@ yarn-error.log*
 next-env.d.ts
 
 # LANDING-01: the clinic-portal demo build is copied in by `npm run sync:demo` and never committed.
-/public/demo/app
 
 # local tooling state
 /.impeccable

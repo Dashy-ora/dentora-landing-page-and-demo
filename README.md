@@ -64,7 +64,7 @@ Server components read the public endpoints through cached functions (`lib/data.
 
 ## The demo
 
-The demo is the real clinic portal built in demo mode, running on sample data in the visitor's browser. It is not part of this repo and must be synced in **before `next build` and before every deploy** (the files are copied into `public/demo/app`, which is gitignored):
+The demo is the real clinic portal built in demo mode, running on sample data in the visitor's browser. It is built in the clinic portal and copied into `public/demo/app`, which **is committed here**, so a deploy from this repo alone has a working demo with no backend and no portal checkout. After every portal demo change, rebuild, sync and commit the folder:
 
 ```bash
 cd <clinic-portal>
@@ -74,7 +74,7 @@ npm run sync:demo              # PORTAL_DEMO_DIST overrides the source folder
 npm run build
 ```
 
-`sync:demo` refuses a folder that is not a demo build. `next build` works without `public/demo/app`: `/demo` then shows the trial call to action and the trial-interest form, and "Open the demo" buttons in pages are left out, so no link leads nowhere (`lib/demo-build.ts` checks for `public/demo/app/index.html` on each request). `/demo/app` itself needs no backend: it uses its build-time defaults when `GET /public/site/demo` fails.
+`sync:demo` refuses a folder that is not a demo build. `next build` works without `public/demo/app`: `/demo` then shows the trial call to action and the trial-interest form, and "Open the demo" buttons in pages are left out, so no link leads nowhere (`lib/demo-build.ts` checks for `public/demo/app/index.html` on each request). `/demo/app` itself needs no backend and no server code: it is static files, every portal API call is answered in the visitor's browser, nothing loads from another origin, and the one optional request (`GET /api/v1/public/site/demo`, answered by this site) falls back to the built-in settings when it fails. The root opens straight into the sample clinic. Deep links (`/demo/app/c/...`) serve `index.html`; a missing file under `/demo/app` (a dot in the path) answers a plain 404, never HTML. On a plain static host, serve `index.html` for paths under `/demo/app` without a dot.
 
 ## Production
 
