@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-theme="system">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#15334a" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f2535" media="(prefers-color-scheme: dark)" />
+    <title>Dentora</title>
+    <!-- Pre-paint theme + direction (no flash): mirrors src/theme/theme.ts and the locale effect in App.tsx.
+         Staff pages keep their locale in dentora.clinic.locale; public /book and /forms pick it from the browser language. Storage errors fall back to defaults. -->
+    <script>
+      (function () {
+        var r = document.documentElement, p = 'system', l = 'ar', path = location.pathname;
+        var pub = path === '/forms' || path === '/book' || path.indexOf('/book/') === 0;
+        try { p = localStorage.getItem('dentora.theme') || 'system'; if (!pub) l = localStorage.getItem('dentora.clinic.locale') === 'en' ? 'en' : 'ar'; } catch (e) {}
+        if (pub) { try { l = navigator.language.indexOf('en') === 0 ? 'en' : 'ar'; } catch (e) {} }
+        if (p !== 'light' && p !== 'dark') p = 'system';
+        var d = p === 'dark';
+        try { d = d || (p === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches); } catch (e) {}
+        r.dataset.theme = p; r.classList.toggle('dark', d); r.style.colorScheme = d ? 'dark' : 'light';
+        try { var m = document.querySelectorAll('meta[name="theme-color"]'); for (var i = 1; i < m.length; i++) m[i].remove(); m[0].removeAttribute('media'); m[0].content = d ? '#0f2535' : '#15334a'; } catch (e) {}
+        r.lang = l; r.dir = l === 'ar' ? 'rtl' : 'ltr';
+      })();
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/demo/app/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/demo/app/brand/app-icon-dark.svg" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/demo/app/brand/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/demo/app/brand/apple-touch-icon.png" />
+    <link rel="manifest" href="/demo/app/site.webmanifest" />
+    <link rel="preload" href="/demo/app/fonts/tajawal/Tajawal-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/demo/app/fonts/sora/Sora-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <script type="module" crossorigin src="/demo/app/assets/index-C2Cu3Vj-.js"></script>
+    <link rel="modulepreload" crossorigin href="/demo/app/assets/ui-DQtRk9Tm.js">
+    <link rel="modulepreload" crossorigin href="/demo/app/assets/humanise-DZ1SoBwT.js">
+    <link rel="stylesheet" crossorigin href="/demo/app/assets/index-DmcZQ89S.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

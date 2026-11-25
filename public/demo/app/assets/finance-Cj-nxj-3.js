@@ -1,0 +1,1 @@
+import{ca as e,oa as t,ua as n}from"./index-C2Cu3Vj-.js";import{t as r}from"./write-BqUWYH9Q.js";var i=(e,t)=>`/patients/${e}/finance${t}`;async function a(a,o,s,c=1){let l=await e(a,i(o,`/${s}${t({page:c,per_page:100,sort:`-id`})}`));return{data:l.data.filter(e=>r(e.id)).sort((e,t)=>n(t,`created_at`).localeCompare(n(e,`created_at`))),meta:l.meta}}export{a as n,i as t};

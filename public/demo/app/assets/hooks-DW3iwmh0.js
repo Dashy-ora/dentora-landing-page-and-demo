@@ -1,0 +1,1 @@
+import{Jt as e}from"./ui-DQtRk9Tm.js";import{An as t,zt as n}from"./index-C2Cu3Vj-.js";var r=e(),i=()=>(0,r.useState)(t)[0],a=e=>n(e.date,e.time);export{i as n,a as t};
