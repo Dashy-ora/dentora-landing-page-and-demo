@@ -43,6 +43,7 @@ All in `.env.local` (never committed; `.env.example` is the template).
 | `PORTAL_TRIAL_URL` | Optional. Target of every "Start a free trial" button. Empty means the trial request form on the Contact page (`/contact#trial-interest`, `/en/...` in English). Set it only to a real self-service sign-up page: the clinic portal has no sign-up. |
 | `SITE_URL` | This site's public origin: canonical URLs, hreflang, sitemap, the same-origin check on form posts. |
 | `LANDING_TRUSTED_PROXY_HOPS` or `LANDING_CLIENT_IP_HEADER` | Optional: where to read the visitor address from (see "Production"). |
+| `LANDING_FORMS_SECRET` | Optional: signs forwarded forms so the backend's form limit counts per visitor on any host (see "Deploy on Vercel"). |
 | `PORTAL_DEMO_DIST` | Where `sync:demo` reads the portal demo build from. |
 
 ## Routes
@@ -97,12 +98,13 @@ The repo deploys as is: Next.js is detected, `vercel.json` pins `npm ci` and `np
    | `SITE_URL` | the public https origin, for example `https://dentora.example` |
    | `DENTORA_API_URL` | the backend's https origin; leave unset until the backend is hosted (built-in content is served) |
    | `LANDING_REVALIDATE_SECRET` | 16+ characters, the same value as the backend's `LANDING_REVALIDATE_SECRET` |
+| `LANDING_FORMS_SECRET` | 32+ characters, the same value as the backend's `LANDING_FORMS_SECRET` (a different value from the revalidate secret) |
    | `LANDING_CLIENT_IP_HEADER` | `x-real-ip` (Vercel overwrites it with the visitor address) |
    | `PORTAL_TRIAL_URL` | optional, see Configuration |
 
    Do not set `PORTAL_DEMO_DIST` or `LANDING_TRUSTED_PROXY_HOPS` on Vercel.
 3. **Domain:** add it under the project's Domains, then make `SITE_URL` match it and redeploy.
-4. **Backend side:** `LANDING_REVALIDATE_URL=https://<domain>/api/revalidate` and the same `LANDING_REVALIDATE_SECRET`. Vercel functions have no fixed outgoing address, so the backend cannot list this site in `IDENTITY_TRUSTED_PROXIES` by address: until the backend trusts this site another way, it sees Vercel's addresses instead of the visitor's for the per-address form limit.
+4. **Backend side:** `LANDING_REVALIDATE_URL=https://<domain>/api/revalidate` and the same `LANDING_REVALIDATE_SECRET`, plus the same `LANDING_FORMS_SECRET`. Vercel functions have no fixed outgoing address, so the backend cannot list this site in `IDENTITY_TRUSTED_PROXIES`; instead each forwarded form is signed (backend W65: `X-Dentora-Timestamp`, `X-Dentora-Signature` = HMAC-SHA256 over `"<timestamp>.<form>.<visitor ip>.<raw body>"`, `X-Dentora-Visitor-Ip`), and the backend counts the form limit per signed visitor address. Without the secret on both sides, all visitors share the limit of the calling address.
 5. **Updating the demo:** in the portal `npm run build:demo`, here `npm run sync:demo`, then commit `public/demo/app` and push; Vercel redeploys.
 
 Notes: the "Open the demo" buttons depend on `public/demo/app/index.html` being present when the site is BUILT (`DENTORA_DEMO_BUILD`, see `lib/demo-build.ts`), because Vercel serves `public/` from its CDN, not from the server functions. Preview deployments behind Vercel Authentication cannot read their own `/api/site-slugs`, so unknown pages there render the site instead of a 404; production is unaffected. The "last good copy" of backend content is kept per function instance, so after a cold start during a backend outage the built-in content answers.

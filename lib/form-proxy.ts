@@ -1,5 +1,6 @@
 import { clientIp } from "./client-ip";
 import { apiBase, siteUrl } from "./config";
+import { signatureHeaders } from "./form-signature";
 
 export const MAX_BODY_BYTES = 8192;
 const FORMS = ["demo_request", "contact", "trial_interest"];
@@ -7,6 +8,7 @@ const FORMS = ["demo_request", "contact", "trial_interest"];
 type Deps = {
   env?: Record<string, string | undefined>;
   fetchImpl?: typeof fetch;
+  nowMs?: number;
 };
 
 function json(status: number, body: unknown, extra: Record<string, string> = {}): Response {
@@ -67,13 +69,16 @@ export async function proxyForm(request: Request, form: string, deps: Deps = {})
   const headers: Record<string, string> = { "Content-Type": "application/json", Accept: "application/json" };
   const ip = clientIp(request.headers, env);
   if (ip) headers["X-Forwarded-For"] = ip;
+  // Signed with LANDING_FORMS_SECRET (when set) over the exact bytes sent, so the backend keeps its per-visitor limit on any host.
+  const body = JSON.stringify({ language: input.language, fields, company_website: honeypot });
+  Object.assign(headers, signatureHeaders(form, ip, body, env, deps.nowMs ?? Date.now()));
 
   let upstream: Response;
   try {
     upstream = await fetcher(`${base}/public/site/forms/${form}`, {
       method: "POST",
       headers,
-      body: JSON.stringify({ language: input.language, fields, company_website: honeypot }),
+      body,
       cache: "no-store",
       signal: AbortSignal.timeout(10000),
     });
