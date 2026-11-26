@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { Lang } from "@/lib/types";
-import { isUnknownPage, NOT_FOUND_PATH, pageRequest, type PageList } from "@/lib/known-pages";
+import { decideWithoutList, isUnknownPage, NOT_FOUND_PATH, pageRequest, type PageList } from "@/lib/known-pages";
 
 // Unknown pages must answer a real 404: under Cache Components the page streams, so its own notFound() arrives as a 200.
 // The published-page list comes from /api/site-slugs (tagged cache), because a proxy cannot cache by tag itself.
@@ -18,14 +18,17 @@ async function loadList(request: NextRequest, lang: string): Promise<PageList> {
 export async function proxy(request: NextRequest) {
   const page = pageRequest(request.nextUrl.pathname);
   if (!page) return NextResponse.next();
-  // Slugs that cannot be pages are unknown without asking the backend.
-  const list = page.slug === null ? null : await loadList(request, page.lang);
-  if (!isUnknownPage(page, list)) return NextResponse.next();
+  // Decided from the path alone, with no list fetch: slugs that cannot be pages are unknown, fixed routes (home, demo,
+  // page-not-found) are known. Only other slugs cost one /api/site-slugs call.
+  const decided = decideWithoutList(page);
+  if (decided === "known") return NextResponse.next();
+  if (decided === "needs-list" && !isUnknownPage(page, await loadList(request, page.lang))) return NextResponse.next();
   return notFoundResponse(request, page.lang);
 }
 
-// A rewrite keeps the destination's status (200: the page streams), so the proxy renders the styled not-found page itself
-// and answers with it under a real 404.
+// A rewrite keeps the destination's status (200: the page streams) and Next 16 has no rewrite-with-status, so the proxy fetches
+// the styled not-found page once and answers with it under a real 404. The not-found paths are excluded from the matcher below,
+// so that fetch is one page render and never re-enters this proxy (and never fetches the page list again).
 async function notFoundResponse(request: NextRequest, lang: Lang): Promise<NextResponse> {
   const headers = { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow" };
   try {
@@ -39,6 +42,7 @@ async function notFoundResponse(request: NextRequest, lang: Lang): Promise<NextR
 }
 
 export const config = {
-  // Skip internals, the API, the demo app and any file with an extension up front; pageRequest() re-checks the same rules.
-  matcher: ["/((?!api/|_next/|demo/app|.*\\..*).*)"],
+  // Skip internals, the API, the demo app (/demo/app and /demo/app/..., but not /demo/app-x), the not-found pages the proxy
+  // renders its 404 from, and any file with an extension up front; pageRequest() re-checks the same rules.
+  matcher: ["/((?!api(?:/|$)|_next/|demo/app(?:/|$)|page-not-found$|en/page-not-found$|.*\\..*).*)"],
 };

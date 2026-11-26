@@ -1,4 +1,5 @@
 import { revalidateTag } from "next/cache";
+import { dropArea } from "@/lib/fallback";
 import { parseRefreshBody, verifySignature } from "@/lib/revalidate";
 
 // Signed refresh call from the backend (W61 RevalidateLandingSite). POST only; verifies HMAC-SHA256 over "<timestamp>.<raw body>".
@@ -17,5 +18,8 @@ export async function POST(request: Request) {
   if (!refresh) return Response.json({ error: "invalid" }, { status: 422, headers: { "Cache-Control": "no-store" } });
   // A publish or unpublish must show at once, so stale content is not served while the refresh runs.
   revalidateTag(refresh.area, { expire: 0 });
+  // The last good copies of this area predate the change (an unpublish, a withdrawn offer, the demo switched off): drop them, so a
+  // backend failure right after it serves the defaults or a 404 instead of the old content. Other instances rely on the age limit.
+  dropArea(refresh.area);
   return Response.json({ revalidated: true, area: refresh.area }, { headers: { "Cache-Control": "no-store" } });
 }

@@ -13,6 +13,8 @@ const demoBuild = existsSync(path.join(root, "public", "demo", "app", "index.htm
 
 const SLUGS = ["", "pricing", "features", "features/patient-care", "features/front-desk", "features/finance", "features/growth", "features/operations", "features/reports", "contact", "demo", "about", "terms", "privacy"];
 const UNKNOWN = ["nope", "features/nope", "en/nope", "en/features/nope", "a/b/c"];
+// LANDING-SEC: paths that used to bypass the proxy's 404 and reach the catch-all page (one backend page read per unique path).
+const BYPASS = ["demo/app-1", "demo/appx", "api/zz-1", "api/forms", "api"];
 
 let failures = 0;
 const check = (ok, message) => {
@@ -75,6 +77,11 @@ async function scenario(name, apiUrl, port) {
     for (const slug of UNKNOWN) {
       const response = await fetch(`${base}/${slug}`);
       check(response.status === 404, `unknown /${slug} -> ${response.status}, expected 404`);
+    }
+    for (const slug of BYPASS) {
+      const response = await fetch(`${base}/${slug}`);
+      check(response.status === 404, `/${slug} -> ${response.status}, expected 404`);
+      if (slug.startsWith("api")) check(!/html/.test(response.headers.get("content-type") ?? ""), `/${slug} answered HTML, expected the plain API 404`);
     }
     const slugs = await (await fetch(`${base}/api/site-slugs/en`)).json();
     check(Array.isArray(slugs.slugs) && slugs.slugs.includes("pricing"), "site-slugs lists the default pages");

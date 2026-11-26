@@ -5,6 +5,7 @@ import { apiBase } from "./config";
 import { requestNow } from "./clock";
 import { warnDefaultsServed } from "./default-log";
 import { withFallback, type Loaded } from "./fallback";
+import { isAlwaysKnown } from "./known-pages";
 import { isDemo, isFormDefinition, isNavigation, isOffersData, isPageData, isPricing, type Guard } from "./shape";
 import type { Area, Demo, FormDefinition, FormKey, Lang, Navigation, OffersData, PageData, Pricing } from "./types";
 
@@ -33,15 +34,19 @@ export type Resolved<T> = { status: "ok"; data: T; source: Source } | { status: 
 /** Live API, then the last good copy. Never throws; "unavailable" covers no API configured, outage, timeout and bad shape. */
 function fromApi<T>(path: string, tags: Area[], guard: Guard): Promise<Loaded<T>> {
   if (!apiBase()) return Promise.resolve({ status: "unavailable" });
-  return withFallback<T>(path, async () => {
-    const result = await cachedRead(path, tags);
-    if (result.kind === "ok") {
-      if (!guard(result.data)) throw new Error("The backend sent an unexpected shape.");
-      return result.data as T;
-    }
-    if (result.kind === "missing") return null;
-    throw new Error("The backend is unavailable.");
-  });
+  return withFallback<T>(
+    path,
+    async () => {
+      const result = await cachedRead(path, tags);
+      if (result.kind === "ok") {
+        if (!guard(result.data)) throw new Error("The backend sent an unexpected shape.");
+        return result.data as T;
+      }
+      if (result.kind === "missing") return null;
+      throw new Error("The backend is unavailable.");
+    },
+    tags,
+  );
 }
 
 function reasonFor(loaded: Loaded<unknown>): string {
@@ -70,13 +75,18 @@ export const getForm = (lang: Lang, key: FormKey) => read<FormDefinition>(`/publ
 /**
  * A page by slug. A slug the live site does not have stays "missing" (a real 404) as long as the live site is published; with the
  * site unpublished or unreachable the fixed default pages answer, and an unknown slug is still "missing".
+ *
+ * The navigation (one shared, cached read) is read first. When it came from the live API or its last good copy, a slug it does not
+ * list is "missing" without a backend page read, so unique made-up slugs cannot each spend a read from the backend's shared
+ * per-source read limit. With the navigation unpublished or unavailable the page is read as before.
  */
 export async function getPage(lang: Lang, slug: string): Promise<Resolved<PageData>> {
   const path = `/public/site/${lang}/pages/${slug}`;
-  const loaded = await fromApi<PageData>(path, ["landing"], isPageData);
-  if (loaded.status === "missing") {
-    const navigation = await fromApi<Navigation>(`/public/site/${lang}/navigation`, ["landing"], isNavigation);
-    if (navigation.status === "ok") return { status: "missing" };
+  const navigation = await fromApi<Navigation>(`/public/site/${lang}/navigation`, ["landing"], isNavigation);
+  if (navigation.status === "ok" && !isAlwaysKnown(slug) && !navigation.data.pages.some((page) => page?.slug === slug)) {
+    return { status: "missing" };
   }
+  const loaded = await fromApi<PageData>(path, ["landing"], isPageData);
+  if (loaded.status === "missing" && navigation.status === "ok") return { status: "missing" };
   return fromLoaded(path, loaded, () => defaultPage(lang, slug));
 }
